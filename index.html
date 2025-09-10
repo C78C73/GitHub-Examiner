@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GitHub Profile Analyzer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="background.js" defer></script>
+</head>
+<body>
+  <div class="main-glass">
+    <h1><span class="icon">🌿</span> GitHub Profile Analyzer</h1>
+    <div class="input-row">
+      <input id="githubLink" placeholder="Enter GitHub Profile Link">
+  <input id="githubToken" type="password" placeholder="Optional: paste a GitHub PAT (fine-grained)" style="width:320px;">
+  <label class="remember-row"><input type="checkbox" id="rememberToken"><span>Remember for session</span></label>
+  <button id="clearTokenBtn" style="background:transparent;border:1px solid #0f3d2e;color:#aaffcc;padding:8px;border-radius:8px;">Clear token</button>
+  <button id="analyzeBtn" onclick="fetchData()">Analyze</button>
+  <div id="analyzeSpinner" style="display:none;margin-left:8px;align-self:center;">⏳</div>
+    </div>
+    <div style="text-align:center;margin-top:6px;color:#cffff0;font-size:0.9rem;">Token: optional; leave blank to use session/default token if configured.</div>
+  <div id="fetchProgress" style="margin-top:8px;color:#aaffcc;font-size:0.95rem;text-align:center;"></div>
+  <div style="text-align:center;margin-top:6px;"><button id="cancelFetchBtn" style="display:none;margin-top:6px;padding:8px 12px;border-radius:8px;background:#2d6b4a;color:#e6ffe6;border:none;">Cancel fetch</button></div>
+    <h2 id="summary"></h2>
+  <div id="chartsSection" style="display:none;">
+      <div class="chart-type-controls">
+        <label>All charts as:
+          <select id="allChartType" onchange="setAllChartsType()">
+            <option value="pie">Pie</option>
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+          </select>
+        </label>
+      </div>
+      <div class="charts-row">
+        <div class="chart-container chart-card" id="langCard">
+          <div class="chart-individual-control">
+            <label>Type:
+              <select id="langChartType" onchange="setChartType('lang')">
+                <option value="pie">Pie</option>
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+              </select>
+            </label>
+          </div>
+          <div class="chart-title">Languages Used</div>
+          <canvas id="langChart"></canvas>
+          <div class="card-legend" id="langLegend"></div>
+        </div>
+        <div class="chart-container chart-card" id="activeDaysCard">
+          <div class="chart-title">Most Active Days (Commits by Day of Week)</div>
+          <canvas id="activeDaysChart"></canvas>
+        </div>
+        <div class="chart-container chart-card" id="activeTimesCard">
+          <div class="chart-title">Top 5 Active Times (Hour of Day)</div>
+          <canvas id="activeTimesChart"></canvas>
+        </div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-container chart-card" id="forkCard">
+          <div class="chart-individual-control">
+            <label>Type:
+              <select id="forkChartType" onchange="setChartType('fork')">
+                <option value="pie">Pie</option>
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+              </select>
+            </label>
+          </div>
+          <div class="chart-title">Top 5 Repos by Forks</div>
+          <canvas id="forkChart"></canvas>
+          <div class="card-legend" id="forkLegend"></div>
+        </div>
+        <div class="chart-container chart-card" id="starCard">
+          <div class="chart-individual-control">
+            <label>Type:
+              <select id="starChartType" onchange="setChartType('star')">
+                <option value="pie">Pie</option>
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+              </select>
+            </label>
+          </div>
+          <div class="chart-title">Top 5 Repos by Stars</div>
+          <canvas id="starChart"></canvas>
+          <div class="card-legend" id="starLegend"></div>
+        </div>
+        <div class="chart-container chart-card" id="followersCard">
+          <div class="chart-title">Followers</div>
+          <div id="followersContent" style="color:#aaffcc;padding:8px;font-weight:600;"></div>
+        </div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-container chart-card fullwidth" style="width: 100%; max-width: 100%;" id="calendarCard">
+          <div class="chart-title">Contribution Calendar (Commits per Day, Year)
+            <select id="calendarYear" onchange="fetchData()" style="margin-left:10px;"></select>
+          </div>
+          <div id="calendarCommitCount" style="margin:10px 0 6px 0;color:#aaffcc;font-weight:600;"></div>
+          <div id="contribCalendar"></div>
+          <div id="calendarLegend" style="margin-top:8px; text-align:left; font-size:0.95em; color:#aaffcc;"></div>
+        </div>
+      </div>
+  <!-- Overview card removed; keeping only calendar in calendarCard to match GitHub-style view -->
+    </div>
+  </div>
+  <script src="script.js"></script>
+  <div class="modal-backdrop" id="tokenModal">
+    <div class="modal">
+      <h3>Remember token for this session?</h3>
+      <p>Storing your token for the browser session makes large fetches easier (avoids re-pasting). The token is kept in sessionStorage and will be cleared when the tab is closed. Do not paste sensitive or long-lived tokens unless you understand the risk.</p>
+      <div class="actions">
+        <button class="btn cancel" id="modalCancel">Cancel</button>
+        <button class="btn confirm" id="modalConfirm">Remember for session</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
